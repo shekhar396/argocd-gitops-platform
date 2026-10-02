@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/shekhar396/argocd-gitops-platform/internal/database"
+	"github.com/shekhar396/argocd-gitops-platform/internal/handler"
 )
 
 type healthResponse struct {
@@ -20,9 +24,23 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	ctx := context.Background()
+
+	db, err := database.Connect(ctx)
+	if err != nil {
+		log.Fatal("database connection failed: ", err)
+	}
+	defer db.Close()
+
+	log.Println("database connection established")
+
 	mux := http.NewServeMux()
+	userHandler := &handler.UserHandler{
+		DB: db,
+	}
 
 	mux.HandleFunc("GET /health", healthHandler)
+	mux.HandleFunc("POST /users", userHandler.Create)
 
 	log.Println("API starting on :8080")
 
