@@ -41,6 +41,10 @@ func main() {
 
 	mux.HandleFunc("GET /health", healthHandler)
 	mux.HandleFunc("POST /users", userHandler.Create)
+	mux.HandleFunc("GET /users", userHandler.List)
+	mux.HandleFunc("GET /users/{id}", userHandler.Get)
+	mux.HandleFunc("PUT /users/{id}", userHandler.Update)
+	mux.HandleFunc("DELETE /users/{id}", userHandler.Delete)
 
 	log.Println("API starting on :8080")
 
