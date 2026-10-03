@@ -1,0 +1,8 @@
+FROM postgres:17
+
+# Only migration sources enter this image; no application or local secrets.
+COPY migrations/ /migrations/
+
+USER postgres
+ENTRYPOINT ["psql"]
+CMD ["--no-psqlrc", "--no-password", "--set=ON_ERROR_STOP=1", "--single-transaction", "--file=/migrations/001_init.sql"]
